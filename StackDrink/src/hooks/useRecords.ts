@@ -1,19 +1,31 @@
 import { useState, useEffect, useCallback } from 'react';
+import { AppState } from 'react-native';
 import { DayRecord, Records, loadRecords, saveRecords, todayKey } from '../utils/storage';
+import { updateDrinkNotification } from '../utils/notifications';
 
 export function useRecords() {
   const [records, setRecords] = useState<Records>({});
 
-  useEffect(() => {
+  const reload = useCallback(() => {
     loadRecords().then(setRecords);
   }, []);
+
+  useEffect(() => {
+    reload();
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') reload();
+    });
+    return () => sub.remove();
+  }, [reload]);
 
   const mutateToday = useCallback((fn: (r: DayRecord) => DayRecord) => {
     const key = todayKey();
     setRecords(prev => {
       const today = prev[key] ?? { mugCount: 0, plateCount: 0 };
-      const next = { ...prev, [key]: fn(today) };
+      const updated = fn(today);
+      const next = { ...prev, [key]: updated };
       saveRecords(next);
+      updateDrinkNotification(updated.mugCount, updated.plateCount);
       return next;
     });
   }, []);

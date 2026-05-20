@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "StackDrink",
+    "slug": "stack-drink",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "plugins": [
+      "expo-notifications"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.stackdrink.app"
+    },
+    "android": {
+      "package": "com.stackdrink.app"
+    }
+  }
+}
